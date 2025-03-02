@@ -30,6 +30,10 @@
         "eyes_label": "eyes: %{eyes}",
         "pelt_label": "pelt: %{pelt}",
         "fur_label": "fur length: %{length}",
+        "strength_label": "strength: %{strength}",
+        "dexterity_label": "dexterity: %{dexterity}",
+        "wisdom_label": "wisdom: %{wisdom}",
+        "charisma_label": "charisma : %{charisma}",
         "accessory_label": "accessory: %{accessory}",
         "parent_label": {
             "one": "parent: %{parents}",

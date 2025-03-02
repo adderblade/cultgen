@@ -48,7 +48,6 @@ from scripts.game_structure.localization import load_lang_resource
 
 import scripts.game_structure.localization as pronouns
 
-
 class Cat:
     """The cat class."""
 
@@ -112,6 +111,10 @@ class Cat:
         backstory="clanborn",
         parent1=None,
         parent2=None,
+        strength=0,
+        dexterity=0,
+        wisdom=0,
+        charisma=0,
         adoptive_parents=None,
         suffix=None,
         specsuffix_hidden=False,
@@ -165,6 +168,10 @@ class Cat:
         self.backstory = backstory
         self.age = None
         self.skills = CatSkills(skill_dict=skill_dict)
+        self.strength = strength
+        self.dexterity = dexterity
+        self.wisdom = wisdom
+        self.charisma = charisma
         self.personality = Personality(
             trait="troublesome", lawful=0, aggress=0, stable=0, social=0
         )
@@ -444,6 +451,7 @@ class Cat:
                 Cat.experience_levels_range["prepared"][0],
                 Cat.experience_levels_range["proficient"][1],
             )
+
         elif self.age == CatAgeEnum.SENIOR_ADULT:
             self.experience = randint(
                 Cat.experience_levels_range["competent"][0],
@@ -456,6 +464,65 @@ class Cat:
             )
         else:
             self.experience = 0
+        
+        if self.age.is_baby():
+            self.strength = 0,
+            self.dexterity = 0,
+            self.wisdom = 0,
+            self.charisma = 0,
+        elif self.age == CatAgeEnum.ADOLESCENT:
+            m = self.moons
+            self.experience = 0
+            self.strength = randint(1, 3)
+            self.dexterity = randint(1, 3)
+            self.wisdom = randint(1, 3)
+            self.charisma = randint(1, 3)
+            while m > Cat.age_moons[CatAgeEnum.ADOLESCENT][0]:
+                ran = game.config["graduation"]["base_app_timeskip_ex"]
+                exp = choice(
+                    list(range(ran[0][0], ran[0][1] + 1))
+                    + list(range(ran[1][0], ran[1][1] + 1))
+                )
+                self.experience += exp + 3
+                self.strength += self.strength + randint(1, 3)
+                self.dexterity += self.dexterity + randint(1, 3)
+                self.wisdom += self.wisdom + randint(1, 3)
+                self.charisma += self.charisma + randint(1, 3)
+                m -= 1
+        elif self.age in [CatAgeEnum.YOUNG_ADULT, CatAgeEnum.ADULT]:
+            self.experience = randint(
+                Cat.experience_levels_range["prepared"][0],
+                Cat.experience_levels_range["proficient"][1],
+            )
+            self.strength += self.strength + randint(3, 4)
+            self.dexterity += self.dexterity + randint(3, 4)
+            self.wisdom += self.wisdom + randint(3, 4)
+            self.charisma += self.charisma + randint(3, 4)
+        elif self.age == CatAgeEnum.SENIOR_ADULT:
+            self.experience = randint(
+                Cat.experience_levels_range["competent"][0],
+                Cat.experience_levels_range["expert"][1],
+            )
+            self.strength += self.strength + randint(3, 5)
+            self.dexterity += self.dexterity + randint(3, 5)
+            self.wisdom += self.wisdom + randint(3, 5)
+            self.charisma += self.charisma + randint(3, 5)
+        elif self.age == CatAgeEnum.SENIOR:
+            self.experience = randint(
+                Cat.experience_levels_range["competent"][0],
+                Cat.experience_levels_range["master"][1],
+            )
+            self.strength += self.strength + randint(3, 6)
+            self.dexterity += self.dexterity + randint(3, 6)
+            self.wisdom += self.wisdom + randint(3, 6)
+            self.charisma += self.charisma + randint(3, 6)
+        else:
+            self.experience = 0
+            self.strength = 0
+            self.dexterity = 0
+            self.wisdom = 0
+            self.charisma = 0
+        
 
         if not skill_dict:
             self.skills = CatSkills.generate_new_catskills(self.status, self.moons)
@@ -1082,7 +1149,12 @@ class Cat:
                         else []
                     ),
                     murder=history_data["murder"] if "murder" in history_data else {},
+                    
                 )
+                self.strength = history_data.get("strength", 0)
+                self.dexterity = history_data.get("dexterity", 0)
+                self.wisdom = history_data.get("wisdom", 0)
+                self.charisma = history_data.get("charisma", 0)
         except Exception:
             self.history = None
             print(
@@ -3405,6 +3477,10 @@ class Cat:
                 "status": self.status,
                 "backstory": self.backstory or None,
                 "moons": self.moons,
+                "strength": self.strength,
+                "dexterity": self.dexterity,
+                "wisdom": self.wisdom,
+                "charisma": self.charisma,
                 "trait": self.personality.trait,
                 "facets": self.personality.get_facet_string(),
                 "parent1": self.parent1,

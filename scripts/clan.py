@@ -925,6 +925,7 @@ class Clan:
         }
 
     def load_clan_settings(self):
+        _load_settings = {}
         if os.path.exists(
             get_save_dir() + f'/{game.switches["clan_list"][0]}/clan_settings.json'
         ):

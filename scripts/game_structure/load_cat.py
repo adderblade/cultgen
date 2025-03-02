@@ -70,6 +70,10 @@ def json_load():
                 moons=cat["moons"],
                 eye_colour=cat["eye_colour"],
                 loading_cat=True,
+                strength=cat["strength"],
+                dexterity=cat["dexterity"],
+                wisdom=cat["wisdom"],
+                charisma=cat["wisdom"]
             )
 
             if cat["eye_colour"] == "BLUE2":
