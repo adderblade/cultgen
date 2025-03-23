@@ -466,10 +466,10 @@ class Cat:
             self.experience = 0
         
         if self.age.is_baby():
-            self.strength = 0,
-            self.dexterity = 0,
-            self.wisdom = 0,
-            self.charisma = 0,
+            self.strength = randint(0, 1)
+            self.dexterity = randint(0, 1)
+            self.wisdom = randint(0, 1)
+            self.charisma = randint(0, 1)
         elif self.age == CatAgeEnum.ADOLESCENT:
             m = self.moons
             self.experience = 0
@@ -484,38 +484,38 @@ class Cat:
                     + list(range(ran[1][0], ran[1][1] + 1))
                 )
                 self.experience += exp + 3
-                self.strength += self.strength + randint(1, 3)
-                self.dexterity += self.dexterity + randint(1, 3)
-                self.wisdom += self.wisdom + randint(1, 3)
-                self.charisma += self.charisma + randint(1, 3)
+                self.strength = randint(1, 3)
+                self.dexterity = randint(1, 3)
+                self.wisdom = randint(1, 3)
+                self.charisma = randint(1, 3)
                 m -= 1
         elif self.age in [CatAgeEnum.YOUNG_ADULT, CatAgeEnum.ADULT]:
             self.experience = randint(
                 Cat.experience_levels_range["prepared"][0],
                 Cat.experience_levels_range["proficient"][1],
             )
-            self.strength += self.strength + randint(3, 4)
-            self.dexterity += self.dexterity + randint(3, 4)
-            self.wisdom += self.wisdom + randint(3, 4)
-            self.charisma += self.charisma + randint(3, 4)
+            self.strength =  randint(6, 8)
+            self.dexterity = randint(6, 8)
+            self.wisdom = randint(6, 8)
+            self.charisma = randint(6, 8)
         elif self.age == CatAgeEnum.SENIOR_ADULT:
             self.experience = randint(
                 Cat.experience_levels_range["competent"][0],
                 Cat.experience_levels_range["expert"][1],
             )
-            self.strength += self.strength + randint(3, 5)
-            self.dexterity += self.dexterity + randint(3, 5)
-            self.wisdom += self.wisdom + randint(3, 5)
-            self.charisma += self.charisma + randint(3, 5)
+            self.strength = randint(7, 9)
+            self.dexterity = randint(7, 9)
+            self.wisdom = randint(7, 9)
+            self.charisma = randint(7, 9)
         elif self.age == CatAgeEnum.SENIOR:
             self.experience = randint(
                 Cat.experience_levels_range["competent"][0],
                 Cat.experience_levels_range["master"][1],
             )
-            self.strength += self.strength + randint(3, 6)
-            self.dexterity += self.dexterity + randint(3, 6)
-            self.wisdom += self.wisdom + randint(3, 6)
-            self.charisma += self.charisma + randint(3, 6)
+            self.strength = randint(8, 10)
+            self.dexterity = randint(8, 10)
+            self.wisdom = randint(8, 10)
+            self.charisma = randint(8, 10)
         else:
             self.experience = 0
             self.strength = 0

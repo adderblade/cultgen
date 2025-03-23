@@ -401,14 +401,6 @@ class CatSkills:
             "secondary": self.secondary.get_save_string() if self.secondary else None,
             "hidden": self.hidden.name if self.hidden else None,
         }
-    def strength(self):
-        self.strength
-    def dexterity(self):
-        self.dexterity
-    def wisdom(self):
-        self.wisdom
-    def charisma(self):
-        self.charisma
 
     def skill_string(self, short=False):
         output = []
