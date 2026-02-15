@@ -9,25 +9,22 @@ import pygame_gui
 from pygame_gui.core import ObjectID, UIContainer
 
 from scripts.cat.cats import Cat
-from scripts.game_structure.game_essentials import game
+from scripts.game_structure import game
+from scripts.game_structure.localization import load_lang_resource
 from scripts.game_structure.ui_elements import (
     UIImageButton,
     CatButton,
     UISurfaceImageButton,
 )
-from scripts.utility import (
-    get_text_box_theme,
-    shorten_text_to_fit,
-    ui_scale_dimensions,
-    ui_scale_value,
-    ui_scale_offset
-)
-from scripts.game_structure.localization import load_lang_resource
-from scripts.utility import ui_scale
+from ..ui.theme import get_text_box_theme
+from ..events_module.text_adjust import shorten_text_to_fit
+from ..cat import pronouns
+from ..ui.scale import ui_scale, ui_scale_dimensions, ui_scale_offset, ui_scale_value
 from .Screens import Screens
-from ..game_structure import localization as pronouns
+from .enums import GameScreen
+from ..game_structure.game.switches import switch_get_value, switch_set_value, Switch
 from ..game_structure.screen_settings import MANAGER
-from ..game_structure.windows import PronounCreation
+from ..ui.windows.pronoun_creation import PronounCreationWindow
 from ..ui.generate_button import get_button_dict, ButtonStyles
 
 
@@ -68,14 +65,14 @@ class ChangeGenderScreen(Screens):
     def handle_event(self, event):
         if event.type == pygame_gui.UI_BUTTON_START_PRESS:
             if event.ui_element == self.back_button:
-                self.change_screen("profile screen")
+                self.change_screen(GameScreen.PROFILE)
             elif event.ui_element == self.next_cat_button:
                 if isinstance(Cat.fetch_cat(self.next_cat), Cat):
-                    game.switches["cat"] = self.next_cat
+                    switch_set_value(Switch.cat, self.next_cat)
                     self.update_selected_cat()
             elif event.ui_element == self.previous_cat_button:
                 if isinstance(Cat.fetch_cat(self.previous_cat), Cat):
-                    game.switches["cat"] = self.previous_cat
+                    switch_set_value(Switch.cat, self.previous_cat)
                     self.update_selected_cat()
             elif event.ui_element == self.buttons["save"]:
                 if self.are_boxes_full():
@@ -95,7 +92,7 @@ class ChangeGenderScreen(Screens):
                     )
 
             elif event.ui_element == self.buttons["add_pronouns"]:
-                PronounCreation(self.the_cat)
+                PronounCreationWindow(self.the_cat)
                 self.previous_cat_button.disable()
                 self.next_cat_button.disable()
                 self.back_button.disable()
@@ -205,7 +202,7 @@ class ChangeGenderScreen(Screens):
     def update_selected_cat(self):
         self.reset_buttons_and_boxes()
 
-        self.the_cat = Cat.fetch_cat(game.switches["cat"])
+        self.the_cat = Cat.all_cats[switch_get_value(Switch.cat)]
         if not self.the_cat:
             return
 
@@ -330,12 +327,14 @@ class ChangeGenderScreen(Screens):
                 block_rect,
                 container=self.removalboxes_text["container_general"],
                 manager=MANAGER,
-                anchors={
-                    "centerx": "centerx",
-                    "top_target": self.elements[f"cat_pronouns_{n - 1}"],
-                }
-                if n > 0
-                else {"centerx": "centerx"},
+                anchors=(
+                    {
+                        "centerx": "centerx",
+                        "top_target": self.elements[f"cat_pronouns_{n - 1}"],
+                    }
+                    if n > 0
+                    else {"centerx": "centerx"}
+                ),
                 margins={"left": 0, "right": 0, "top": ui_scale_value(2), "bottom": 0},
             )
             self.elements[
@@ -447,12 +446,14 @@ class ChangeGenderScreen(Screens):
                 block_rect,
                 container=self.removalboxes_text["container_general2"],
                 manager=MANAGER,
-                anchors={
-                    "centerx": "centerx",
-                    "top_target": self.elements[f"{n - 1}"],
-                }
-                if n > 0
-                else {"centerx": "centerx"},
+                anchors=(
+                    {
+                        "centerx": "centerx",
+                        "top_target": self.elements[f"{n - 1}"],
+                    }
+                    if n > 0
+                    else {"centerx": "centerx"}
+                ),
                 margins={"left": 0, "right": 0, "top": ui_scale_value(2), "bottom": 0},
             )
             self.elements[f"{n}"].background_image = pygame.transform.scale(

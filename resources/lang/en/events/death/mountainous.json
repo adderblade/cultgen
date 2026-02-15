@@ -7,7 +7,7 @@
             "leaf-bare"
         ],
         "tags": ["all_lives", "no_body"],
-        "weight": 20,
+        "frequency": 1,
         "event_text": "m_c was buried alive when an avalanche hit the camp.",
         "m_c": {
             "dies": true
@@ -15,8 +15,7 @@
         "history": [
             {
                 "cats": ["m_c"],
-                "reg_death": "m_c was buried alive in an avalanche.",
-                "lead_death": "{VERB/m_c/were/was} buried alive in an avalanche"
+                "death": "m_c was buried alive in an avalanche."
             }
         ]
     },
@@ -26,7 +25,7 @@
         "season": ["any"],
         "sub_type": [],
         "tags": ["clan:kitten"],
-        "weight": 20,
+        "frequency": 2,
         "event_text": "m_c snuck out of camp and was lost to the strange, angular tunnels, nothing left to find but blood and weasel-scent.",
         "m_c": {
             "age": ["kitten"],
@@ -35,7 +34,7 @@
         "history": [
             {
                 "cats": ["m_c"],
-                "reg_death": "m_c was eaten by a mountain weasel when {PRONOUN/m_c/subject} tried to sneak out of camp."
+                "death": "m_c was eaten by a mountain weasel when {PRONOUN/m_c/subject} tried to sneak out of camp."
             }
         ]
     }

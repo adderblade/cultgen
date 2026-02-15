@@ -13,7 +13,7 @@
         "relations_neutral": " (o_c_n relations unchanged.)",
         "relations_worsened": " (o_c_n relations worsened.)",
         "lead_den_killed": "m_c was killed by c_n.",
-        "condition_retire_adolescent": "m_c decides {PRONOUN\/m_c\/subject}'d rather spend {PRONOUN\/m_c\/poss} time helping around camp and entertaining the kits; {PRONOUN\/m_c\/subject}{VERB\/m_c\/'re\/'s} warmly welcomed into the elders' den.",
+        "condition_retire_adolescent": "%{name} decides {PRONOUN\/m_c\/subject}'d rather spend {PRONOUN\/m_c\/poss} time helping around camp and entertaining the kits; {PRONOUN\/m_c\/subject}{VERB\/m_c\/'re\/'s} warmly welcomed into the elders' den.",
         "condition_retire_adolescent_ceremony": " {PRONOUN\/m_c\/subject\/CAP} {VERB\/m_c\/are\/is} given the name %{newname} in honor of {PRONOUN\/m_c\/poss} contributions to %{clan}Clan.",
         "condition_retire_no_leader": "m_c has decided to retire from normal Clan duty.",
         "condition_retire_normal": "Seeing m_c struggling the last few moons, lead_name approaches {PRONOUN\/m_c\/object} and promises that no one would think less of {PRONOUN\/m_c\/object} for retiring early, and that {PRONOUN\/m_c\/subject} would still be a valuable member of the Clan as an elder. m_c agrees; later that day, {PRONOUN\/m_c\/poss} elder ceremony is held.",
@@ -45,7 +45,6 @@
             "one": "%{names} found a %{insert} and decide to adopt it.",
             "many": "%{names} found a %{insert} and decide to adopt them."
         },
-        "new_kit_thought": "Snuggles up to the belly of r_c",
         "event_mediator_app": "m_c has chosen to use {PRONOUN/m_c/poss} skills and experience to help solve the Clan's disagreements. A meeting is called, and {PRONOUN/m_c/subject} {VERB/m_c/become/becomes} the Clan's newest mediator.",
         "herbs_found": {
             "zero": "med_name could not find any herbs this moon.",
@@ -70,10 +69,12 @@
             "many": "With the focus of the Clan, %{amount} pieces of prey were... acquired."
         },
         "focus_injury_hoarding": {
+            "zero": "Luckily, nobody in the Clan got %{condition} due to hoarding.",
             "one": "A cat got %{condition} due to hoarding herbs and prey.",
             "many": "Multiple cats got %{condition} due to hoarding herbs and prey."
         },
         "focus_injury_raiding": {
+            "zero": "Luckily, nobody in the Clan got %{condition} during raids.",
             "one": "A cat got %{condition} while raiding other Clans for more prey.",
             "many": "Multiple cats got %{condition} while raiding other Clans for more prey."
         },
@@ -85,18 +86,16 @@
             "one": " {PRONOUN/m_c/subject/CAP} {VERB/m_c/bring/brings} along {PRONOUN/m_c/poss} kitten.",
             "many": " {PRONOUN/m_c/subject/CAP} {VERB/m_c/bring/brings} along {PRONOUN/m_c/poss} kittens."
         },
+        "event_returning_child_of_lost": "m_c approaches the Clan and asks to join, claiming to be %{parent_name}'s kitten.",
         "kittencough_spread": {
             "one": "Kittencough has spread around the nursery. %{kits} is affected.",
             "many": "Kittencough has spread around the nursery. %{kits} are affected."},
         "flea_spread": {
+            "one": "Fleas have been hopping from pelt to pelt and now %{cats} is infested.",
             "two": "Fleas have been hopping from pelt to pelt and now %{cats} are both infested.",
             "many": "Fleas have been hopping from pelt to pelt and now %{cats} are all infested."
         },
         "illness_spread": "%{illness} has spread around the camp. %{cats} have been infected.",
-        "thought_new_cat": "Is looking around the camp with wonder",
-        "thought_new_kitten": "Is snuggled safe in the nursery",
-        "thought_meeting": "Is wondering about those new cats",
-        "thought_new_dead": "Explores a new, starry world",
         "scar_event0": "m_c's %{injury} has healed, but {PRONOUN/m_c/subject}'ll always carry evidence of it on {PRONOUN/m_c/poss} pelt.",
         "scar_event1": "m_c healed from {PRONOUN/m_c/poss} %{injury} but will forever be marked by a scar.",
         "scar_event2": "m_c's %{injury} has healed, but the injury left {PRONOUN/m_c/object} scarred.",

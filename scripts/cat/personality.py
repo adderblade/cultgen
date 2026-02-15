@@ -4,26 +4,28 @@ from random import randint, choice, choices
 
 import ujson
 
+from scripts.game_structure import constants
+
 
 class Personality:
     """Hold personality information for a cat, and functions to deal with it"""
 
-    facet_types = ["lawfulness", "sociability", "aggression", "stability"]
-    facet_range = [0, 16]
+    facet_types = constants.facet_types
+    facet_range = constants.facet_range
 
     with open(
-            "resources/dicts/traits/trait_ranges.json", "r", encoding="utf-8"
+        "resources/dicts/traits/trait_ranges.json", "r", encoding="utf-8"
     ) as read_file:
         trait_ranges = ujson.loads(read_file.read())
 
     def __init__(
-            self,
-            trait: str = None,
-            kit_trait: bool = False,
-            lawful: int = None,
-            social: int = None,
-            aggress: int = None,
-            stable: int = None,
+        self,
+        trait: str = None,
+        kit_trait: bool = False,
+        lawful: int = None,
+        social: int = None,
+        aggress: int = None,
+        stable: int = None,
     ):
         """If trait is given, it will randomize facets within the range of the trait. It will ignore any facets given.
         If facets are given and no trait, it will find a trait that matches the facets. NOTE: you can give
@@ -199,25 +201,25 @@ class Personality:
         trait_range = trait_type_dict[self.trait]
 
         if not (
-                trait_range["lawfulness"][0]
-                <= self.lawfulness
-                <= trait_range["lawfulness"][1]
+            trait_range["lawfulness"][0]
+            <= self.lawfulness
+            <= trait_range["lawfulness"][1]
         ):
             return False
         if not (
-                trait_range["sociability"][0]
-                <= self.sociability
-                <= trait_range["sociability"][1]
+            trait_range["sociability"][0]
+            <= self.sociability
+            <= trait_range["sociability"][1]
         ):
             return False
         if not (
-                trait_range["aggression"][0]
-                <= self.aggression
-                <= trait_range["aggression"][1]
+            trait_range["aggression"][0]
+            <= self.aggression
+            <= trait_range["aggression"][1]
         ):
             return False
         if not (
-                trait_range["stability"][0] <= self.stability <= trait_range["stability"][1]
+            trait_range["stability"][0] <= self.stability <= trait_range["stability"][1]
         ):
             return False
 

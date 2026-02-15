@@ -15,22 +15,36 @@ nav:
         - dev/project-basics/getting-started-with-github-and-clangen.md
     - Code:
         - dev/code/index.md
+        - dev/code/cat-status.md
         - dev/code/content-adding.md
+        - dev/code/localization.md
     - Writing:
         - dev/writing/index.md
         - Reference:
           - dev/writing/reference/index.md
+          - dev/writing/reference/writing-standards.md
+          - dev/writing/reference/terminology.md
+          - dev/writing/reference/tag-lists.md
+          - dev/writing/reference/common-formats.md
+          - dev/writing/reference/pronoun-tags.md
           - dev/writing/reference/trait-dictionary.md
+          - dev/writing/reference/biomes.md
+          - dev/writing/reference/animals.md
+          - dev/writing/reference/common-errors.md
         - dev/writing/patrols.md
         - dev/writing/shortevents.md
+        - dev/writing/future.md
         - dev/writing/leaders-den-events.md
         - dev/writing/thoughts.md
         - dev/writing/leader-ceremonies.md
         - dev/writing/localization.md
         - dev/writing/advanced-documentation.md
     - Art:
+        - Cat Sprites:
+            - dev/art/cat-sprites/cat-sprites.md
+            - dev/art/cat-sprites/adding-new-sprites.md
+            - dev/art/cat-sprites/palette-maps.md
         - dev/art/index.md
-        - dev/art/cat-sprites.md
         - dev/art/patrol-sprites.md
         - dev/art/clan-symbols.md
         - dev/art/camp-backgrounds.md
@@ -38,6 +52,7 @@ nav:
         - dev/audio/index.md
   - User Guides:
     - user-guides/index.md
+    - user-guides/removing-palette-maps.md
   - Contributing to the Wiki:
       - contributing/index.md
       - contributing/documentation-resources.md
@@ -56,6 +71,7 @@ theme:
     - navigation.top
     - navigation.indexes
     - navigation.tabs
+    - navigation.path
   custom_dir: docs-resources
   palette:
     - media: "(prefers-color-scheme)"

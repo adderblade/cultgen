@@ -6,24 +6,23 @@ import pygame_gui
 
 from scripts.cat.cats import Cat
 from scripts.clan_resources.herb.herb_supply import MESSAGES
-from scripts.game_structure.game_essentials import game
+from scripts.game_structure import game
 from scripts.game_structure.ui_elements import (
     UISpriteButton,
     UIImageButton,
     UITextBoxTweaked,
     UISurfaceImageButton,
+    UIModifiedImage,
 )
-from scripts.utility import (
-    get_text_box_theme,
-    ui_scale,
-    get_alive_status_cats,
-    shorten_text_to_fit,
-    get_living_clan_cat_count,
-    event_text_adjust,
-    ui_scale_offset,
-)
+from ..ui.theme import get_text_box_theme
+from ..events_module.text_adjust import event_text_adjust, shorten_text_to_fit
+from ..ui.scale import ui_scale, ui_scale_offset
+from ..clan_package.get_clan_cats import find_alive_cats_with_rank
 from .Screens import Screens
-from ..conditions import get_amount_cat_for_one_medic, medical_cats_condition_fulfilled
+from .enums import GameScreen
+from ..cat.enums import CatRank
+from ..conditions import get_amount_cat_for_one_medic, amount_clanmembers_covered
+from ..game_structure.game.switches import switch_set_value, Switch
 from ..game_structure.screen_settings import MANAGER
 from ..ui.generate_box import BoxStyles, get_box
 from ..ui.generate_button import get_button_dict, ButtonStyles
@@ -111,12 +110,12 @@ class MedDenScreen(Screens):
                 self.update_sick_cats()
             elif event.ui_element in self.cat_buttons.values():
                 cat = event.ui_element.return_cat_object()
-                game.switches["cat"] = cat.ID
-                self.change_screen("profile screen")
+                switch_set_value(Switch.cat, cat.ID)
+                self.change_screen(GameScreen.PROFILE)
             elif event.ui_element == self.med_cat:
                 cat = event.ui_element.return_cat_object()
-                game.switches["cat"] = cat.ID
-                self.change_screen("profile screen")
+                switch_set_value(Switch.cat, cat.ID)
+                self.change_screen(GameScreen.PROFILE)
             elif event.ui_element == self.cats_tab:
                 self.open_tab = "cats"
                 self.cats_tab.disable()
@@ -189,7 +188,7 @@ class MedDenScreen(Screens):
                 manager=MANAGER,
             )
             self.log_title.hide()
-            self.cat_bg = pygame_gui.elements.UIImage(
+            self.cat_bg = UIModifiedImage(
                 ui_scale(pygame.Rect((140, 440), (560, 200))),
                 get_box(BoxStyles.ROUNDED_BOX, (560, 200)),
                 manager=MANAGER,
@@ -258,10 +257,8 @@ class MedDenScreen(Screens):
             self.minor_cats = []
             self.injured_and_sick_cats = []
             for the_cat in Cat.all_cats_list:
-                if (
-                    not the_cat.dead
-                    and not the_cat.outside
-                    and (the_cat.injuries or the_cat.illnesses)
+                if the_cat.status.alive_in_player_clan and (
+                    the_cat.injuries or the_cat.illnesses
                 ):
                     self.injured_and_sick_cats.append(the_cat)
             for cat in self.injured_and_sick_cats:
@@ -347,14 +344,10 @@ class MedDenScreen(Screens):
             med_messages = []
 
             amount_per_med = get_amount_cat_for_one_medic(game.clan)
-            number = medical_cats_condition_fulfilled(
-                Cat.all_cats.values(), amount_per_med, give_clanmembers_covered=True
-            )
+            number = amount_clanmembers_covered(Cat.all_cats.values(), amount_per_med)
 
             meds_cover = i18n.t(
-                "screens.med_den.meds_cover",
-                clansize=number,
-                count=len(self.meds)
+                "screens.med_den.meds_cover", clansize=number, count=len(self.meds)
             )
 
             if game.clan.game_mode == "classic":
@@ -367,29 +360,26 @@ class MedDenScreen(Screens):
                     Cat=Cat,
                     text=choice(MESSAGES["single_not_working"]),
                     main_cat=self.meds[0],
-                    clan=game.clan
+                    clan=game.clan,
                 )
             elif len(self.meds) >= 2 and number == 0:
                 meds_cover = event_text_adjust(
-                    Cat=Cat,
-                    text=choice(MESSAGES["many_not_working"]),
-                    clan=game.clan
+                    Cat=Cat, text=choice(MESSAGES["many_not_working"]), clan=game.clan
                 )
 
             if meds_cover:
-                med_messages.append(event_text_adjust(
-                    Cat,
-                    meds_cover,
-                    main_cat=self.meds[0]
-                ))
+                med_messages.append(
+                    event_text_adjust(Cat, meds_cover, main_cat=self.meds[0])
+                )
 
             if self.meds:
-                med_messages.append(game.clan.herb_supply.get_status_message(choice(self.meds)))
+                med_messages.append(
+                    game.clan.herb_supply.get_status_message(choice(self.meds))
+                )
             self.meds_messages.set_text("<br>".join(med_messages))
 
         else:
             self.meds_messages.set_text(choice(MESSAGES["no_meds_warning"]))
-
 
     def handle_tab_toggles(self):
         if self.open_tab == "cats":
@@ -434,8 +424,8 @@ class MedDenScreen(Screens):
             self.med_name.kill()
 
         # get the med cats
-        self.meds = get_alive_status_cats(
-            Cat, ["medicine cat", "medicine cat apprentice"], sort=True
+        self.meds = find_alive_cats_with_rank(
+            Cat, [CatRank.MEDICINE_CAT, CatRank.MEDICINE_APPRENTICE], sort=True
         )
 
         if not self.meds:
@@ -564,7 +554,7 @@ class MedDenScreen(Screens):
                         condition_list.extend(
                             [
                                 i18n.t(f"conditions.permanent_conditions.{permcond}")
-                                for permcond in list(cat.injuries.keys())
+                                for permcond in list(cat.permanent_condition.keys())
                             ]
                         )
             conditions = ",<br>".join(condition_list)
@@ -596,18 +586,21 @@ class MedDenScreen(Screens):
             i += 1
 
     def draw_med_den(self):
-
         herb_list = []
         herb_supply = game.clan.herb_supply
 
-        if not herb_supply.total:
+        if herb_supply.total <= 0:
             herb_list = ["Empty"]
 
         elif game.clan.game_mode != "classic":
             for herb, count in herb_supply.entire_supply.items():
                 if count <= 0:
                     continue
-                display = herb_supply.herb[herb].plural_display if count > 1 else herb_supply.herb[herb].singular_display
+                display = (
+                    herb_supply.herb[herb].plural_display
+                    if count > 1
+                    else herb_supply.herb[herb].singular_display
+                )
                 herb_list.append(f"{count} {display}")
 
         if len(herb_list) <= 10:
@@ -664,7 +657,7 @@ class MedDenScreen(Screens):
             if count <= 0:
                 continue
             if herb == "cobwebs":
-                self.herbs["cobweb1"] = pygame_gui.elements.UIImage(
+                self.herbs["cobweb1"] = UIModifiedImage(
                     ui_scale(pygame.Rect((108, 95), (396, 224))),
                     pygame.transform.scale(
                         pygame.image.load(
@@ -674,8 +667,9 @@ class MedDenScreen(Screens):
                     ),
                     manager=MANAGER,
                 )
+                self.herbs["cobweb1"].disable()
                 if count > 1:
-                    self.herbs["cobweb2"] = pygame_gui.elements.UIImage(
+                    self.herbs["cobweb2"] = UIModifiedImage(
                         ui_scale(pygame.Rect((108, 95), (396, 224))),
                         pygame.transform.scale(
                             pygame.image.load(
@@ -685,8 +679,9 @@ class MedDenScreen(Screens):
                         ),
                         manager=MANAGER,
                     )
+                    self.herbs["cobweb2"].disable()
                 continue
-            self.herbs[herb] = pygame_gui.elements.UIImage(
+            self.herbs[herb] = UIModifiedImage(
                 ui_scale(pygame.Rect((108, 95), (396, 224))),
                 pygame.transform.scale(
                     pygame.image.load(
@@ -696,6 +691,7 @@ class MedDenScreen(Screens):
                 ),
                 manager=MANAGER,
             )
+            self.herbs[herb].disable()
 
     def exit_screen(self):
         self.meds_messages.kill()
@@ -726,9 +722,6 @@ class MedDenScreen(Screens):
             self.log_box.kill()
         if self.med_cat:
             self.med_cat.kill()
-
-    def chunks(self, L, n):
-        return [L[x : x + n] for x in range(0, len(L), n)]
 
     def clear_cat_buttons(self):
         for cat in self.cat_buttons:

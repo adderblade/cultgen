@@ -1,8 +1,8 @@
 import i18n
 
 from scripts.cat.cats import Cat
-from scripts.game_structure.game_essentials import game
-from scripts.utility import event_text_adjust
+from scripts.game_structure import game
+from scripts.events_module.text_adjust import event_text_adjust
 
 # please for the love of GOD don't do this. ever.
 
@@ -25,6 +25,8 @@ def translate(text: str, **kwargs):
     if text == "":
         return ""
     output = i18n.t(text, **kwargs)
+    if game.event_editing:
+        return output
     dict = {}
     for cat in groups:
         if cat in kwargs and cat in output:

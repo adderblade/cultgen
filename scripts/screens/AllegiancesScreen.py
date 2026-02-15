@@ -3,17 +3,15 @@ import pygame
 import pygame_gui
 
 from scripts.cat.cats import Cat
-from scripts.game_structure.game_essentials import game
+from scripts.game_structure import game
 from scripts.game_structure.screen_settings import MANAGER
-from scripts.utility import (
-    get_text_box_theme,
-    ui_scale,
-    get_alive_clan_queens,
-    ui_scale_offset,
-    adjust_list_text,
-    event_text_adjust,
-)
+from ..ui.theme import get_text_box_theme
+from ..events_module.text_adjust import event_text_adjust, adjust_list_text
+from ..ui.scale import ui_scale, ui_scale_offset
+from ..clan_package.get_clan_cats import get_alive_clan_queens
 from .Screens import Screens
+from ..cat.enums import CatRank
+from ..game_structure.ui_elements import UIModifiedScrollingContainer
 
 
 class AllegiancesScreen(Screens):
@@ -40,7 +38,7 @@ class AllegiancesScreen(Screens):
         self.heading = pygame_gui.elements.UITextBox(
             "screens.allegiances.heading",
             ui_scale(pygame.Rect((0, 115), (400, 40))),
-            text_kwargs={"clan_name": game.clan.name},
+            text_kwargs={"clan_name": game.clan.displayname},
             object_id=get_text_box_theme("#text_box_34_horizcenter_vertcenter"),
             manager=MANAGER,
             anchors={"centerx": "centerx"},
@@ -50,12 +48,13 @@ class AllegiancesScreen(Screens):
         self.show_menu_buttons()
         self.show_mute_buttons()
         self.set_disabled_menu_buttons(["allegiances"])
-        self.update_heading_text(f"{game.clan.name}Clan")
+        self.update_heading_text(f"{game.clan.displayname}Clan")
         allegiance_list = self.get_allegiances_text()
 
-        self.scroll_container = pygame_gui.elements.UIScrollingContainer(
+        self.scroll_container = UIModifiedScrollingContainer(
             ui_scale(pygame.Rect((50, 165), (715, 470))),
             allow_scroll_x=False,
+            allow_scroll_y=True,
             manager=MANAGER,
         )
 
@@ -69,9 +68,11 @@ class AllegiancesScreen(Screens):
                     object_id=get_text_box_theme("#text_box_30_horizleft"),
                     container=self.scroll_container,
                     manager=MANAGER,
-                    anchors={"top_target": self.names_boxes[-1]}
-                    if len(self.names_boxes) > 0
-                    else None,
+                    anchors=(
+                        {"top_target": self.names_boxes[-1]}
+                        if len(self.names_boxes) > 0
+                        else None
+                    ),
                 )
             )
             self.ranks_boxes[-1].disable()
@@ -130,7 +131,9 @@ class AllegiancesScreen(Screens):
     def get_allegiances_text(self):
         """Determine Text. Ouputs list of tuples."""
 
-        living_cats = [i for i in Cat.all_cats.values() if not (i.dead or i.outside)]
+        living_cats = [
+            i for i in Cat.all_cats.values() if i.status.alive_in_player_clan
+        ]
         living_meds = []
         living_mediators = []
         living_warriors = []
@@ -138,21 +141,17 @@ class AllegiancesScreen(Screens):
         living_kits = []
         living_elders = []
         for cat in living_cats:
-            if cat.status == "medicine cat":
+            if cat.status.rank == CatRank.MEDICINE_CAT:
                 living_meds.append(cat)
-            elif cat.status == "warrior":
+            elif cat.status.rank == CatRank.WARRIOR:
                 living_warriors.append(cat)
-            elif cat.status == "mediator":
+            elif cat.status.rank == CatRank.MEDIATOR:
                 living_mediators.append(cat)
-            elif cat.status in [
-                "apprentice",
-                "medicine cat apprentice",
-                "mediator apprentice",
-            ]:
+            elif cat.status.rank.is_any_apprentice_rank():
                 living_apprentices.append(cat)
-            elif cat.status in ["kitten", "newborn"]:
+            elif cat.status.rank.is_baby():
                 living_kits.append(cat)
-            elif cat.status == "elder":
+            elif cat.status.rank == CatRank.ELDER:
                 living_elders.append(cat)
 
         # Find Queens:
@@ -171,7 +170,7 @@ class AllegiancesScreen(Screens):
         # Clan Leader Box:
         # Pull the Clan leaders
         outputs = []
-        if game.clan.leader and not (game.clan.leader.dead or game.clan.leader.outside):
+        if game.clan.leader and game.clan.leader.status.alive_in_player_clan:
             outputs.append(
                 [
                     f"<b><u>{i18n.t('general.leader', count=1).upper()}</u></b>",
@@ -180,7 +179,7 @@ class AllegiancesScreen(Screens):
             )
 
         # Deputy Box:
-        if game.clan.deputy and not (game.clan.deputy.dead or game.clan.deputy.outside):
+        if game.clan.deputy and game.clan.deputy.status.alive_in_player_clan:
             outputs.append(
                 [
                     f"<b><u>{i18n.t('general.deputy', count=1).upper()}</u></b>",
